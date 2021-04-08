@@ -1,20 +1,28 @@
 import { Router } from 'express';
-import { getCustomRepository } from 'typeorm';
-import { parseISO } from 'date-fns';
-import AppointmentsRepository from '../repositories/AppointmentsRepository';
-import CreateAppointmentService from '../services/CreateAppointmentService';
 
-const appointmentsRouter = Router();
+import CreateUserService from '../services/CreateUserService';
+
+const usersRouter = Router();
 
 // Rota GET
 
 // Rota POST
-appointmentsRouter.post('/', async (request, response) => {
+usersRouter.post('/', async (request, response) => {
   try {
-      
+    const { name, email, password } = request.body;
+    const createUser = new CreateUserService();
+    const user = await createUser.execute({
+      name,
+      email,
+      password,
+    });
+
+    delete user.password;
+
+    return response.json(user);
   } catch (err) {
     return response.status(400).json({ Error: err.message });
   }
 });
 
-export default appointmentsRouter;
+export default usersRouter;
