@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import { compare, hash } from 'bcryptjs';
 
+import AppError from '../errors/AppError';
+
 import User from '../models/User';
 
 interface Request {
@@ -18,7 +20,7 @@ class CreateUserService {
       where: { email },
     });
     if (checkUserExists) {
-      throw new Error('Email address already used');
+      throw new AppError('Email address already used');
     }
 
     const hashedPassword = await hash(password, 8);
@@ -32,7 +34,7 @@ class CreateUserService {
     if (user.password) {
       const passwordMatched = await compare(password, user.password);
       if (!passwordMatched) {
-        throw new Error('Incorrect email/password combination');
+        throw new AppError('Incorrect email/password combination');
       }
     }
 
